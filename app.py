@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 from flask_debugtoolbar import DebugToolbarExtension
 # import time, sys # for the delay function
 import pokepy as pk
@@ -20,10 +20,9 @@ app.config['SECRET_KEY'] = "pokemonmeandyou"
 
 
 # delay_print("hello world")
-@app.route('/')
-def search_pokemon():
-    res = client.get_pokemon('1')
-    ability = client.get_ability('1')
+@app.route('/pokemon/<int:poke_id>')
+def search_pokemon(poke_id):
+    res = client.get_pokemon(poke_id)
     print (res.name)
     print (res.id)
     for x in list(res.types):
@@ -39,4 +38,9 @@ def search_pokemon():
     # for x in list(res.stats):
     #     print (x.stat.name)
 
-    return render_template ('base.html')
+    return render_template ('pokedex_stats.html', pokemon = res)
+
+@app.route('/')
+def poke_search():
+    poke_id = 3
+    return redirect (f'/pokemon/{poke_id}')
