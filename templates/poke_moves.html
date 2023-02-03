@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<H1>{{pokemon.name}}</H1>
+<img src="{{pokemon.sprites.front_default}}" alt="">
+<ol>
+    {%for m in moves%}
+    <li>
+        <a href="/pokemon/moves/{{m.move.name}}">
+            {{m.move.name}}
+        </a>
+    </li>
+    {%endfor%}
+</ol>
+{%endblock%}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{%block content%}
+{%set efperc = move.effect_chance | string()%}
+<h1>{{move.name}}</h1>
+<ul>
+    <li>Damage Type: {{move.type.name}}</li>
+    <li>Damage Class: {{move.damage_class.name}}</li>
+    <li>Effect: {{move.effect_entries[0].effect.replace('$effect_chance', efperc)}}</li>
+    <li>Target: {{move.target.name}}</li>
+    <li>Accuracy: {{move.accuracy}}</li>
+    <li>Power: {{move.power}}</li>
+    <li>Power Points: {{move.pp}}</li>
+</ul>
+{%endblock%}

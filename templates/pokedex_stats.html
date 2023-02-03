@@ -2,17 +2,20 @@
 {% block content %}
 <div id="stats">
     <H2>{{pokemon.name}}</H2>
+    <img src="{{pokemon.sprites.front_default}}" alt="">
     <ul>
         <li>
             ID: {{pokemon.id}}
         </li>
         <li>
             Types:
-            {%for p in pokemon.types%}
-        <li>
-            {{p.slot}}: {{p.type.name}}
-        </li>
-        {%endfor%}
+            <ol>
+                {%for p in pokemon.types%}
+                <li>
+                    {{p.type.name}}
+                </li>
+                {%endfor%}
+            </ol>
         </li>
         <li>
             Height: {{pokemon.height}}
@@ -21,10 +24,10 @@
             Weight: {{pokemon.weight}}
         </li>
         <li>
-            <a href="">{{pokemon.abilities | length}} Abilities</a>
+            <a href="/pokemon/{{pokemon.id}}/abilities">{{pokemon.abilities | length}} Abilities</a>
         </li>
         <li>
-            <a href="">{{pokemon.moves | length}} Moves</a>
+            <a href="/pokemon/{{pokemon.id}}/moves">{{pokemon.moves | length}} Moves</a>
 
         </li>
     </ul>

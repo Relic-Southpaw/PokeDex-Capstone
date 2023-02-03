@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<H1>{{pokemon.name}}</H1>
+<img src="{{pokemon.sprites.front_default}}" alt="">
+<h2>Abilities:</h2>
+<ol>
+    {%for a in abilities%}
+    <li>
+        <b>{{a.name}}</b>
+        <ul>
+            <li>
+                {{a.effect}}
+            </li>
+
+        </ul>
+    </li>
+    {%endfor%}
+</ol>
+{%endblock%}

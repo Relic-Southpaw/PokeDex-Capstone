@@ -14,8 +14,34 @@
 </head>
 
 <body>
-    {%block content%}
-    {%endblock%}
+    <nav class="navbar navbar-light bg-primary justify-content-between ">
+        <div class="container">
+            <a href="/" class="navbar-brand text-light">Project: Pokedex</a>
+            <ul class="nav navbar-nav flex-row float-right">
+                {% if session['trainer_id'] %}
+                <li class="nav-item">
+                    <a class="nav-link pr-3 text-light" href="/logout">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link pr-3 text-light" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="/register">Sign up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 2em">
+        {% for category, msg in get_flashed_messages(with_categories=True) %}
+        <div class="alert alert-{{category}}">{{ msg }}</div>
+        {% endfor %}
+
+        {%block content%}
+        {%endblock%}
+    </div>
 </body>
 
 </html>
