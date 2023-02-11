@@ -3,44 +3,61 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PokeDex</title>
 
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
     <script src="https://unpkg.com/jquery"></script>
     <script src="https://unpkg.com/popper"></script>
     <script src="https://unpkg.com/bootstrap"></script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="shortcut icon" href="/static/favicon.ico">
 </head>
 
-<body>
-    <nav class="navbar navbar-light bg-primary justify-content-between ">
-        <div class="container">
-            <a href="/" class="navbar-brand text-light">Project: Pokedex</a>
-            <ul class="nav navbar-nav flex-row float-right">
-                {% if session['trainer_id'] %}
-                <li class="nav-item">
-                    <a class="nav-link pr-3 text-light" href="/logout">Logout</a>
+<body class="{% block body_class %}{% endblock %}">
+    <nav class="navbar navbar-expand">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">
+                    <img src="/static/images/Pokeball style mark cottenheart.png" alt="logo">
+                    <span>PokeDex</span>
+                </a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.endpoint != None %}
+                <li>
+                    <form class="navbar-form navbar-right" action="/poke-search">
+                        <input name="q" class="form-control" placeholder="Search Pokedex" id="search">
+                        <button class="btn btn-default">
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </form>
                 </li>
+                {% endif %}
+                {% if not g.user %}
+                <li><a href="/signup">Sign up</a></li>
+                <li><a href="/login">Log in</a></li>
                 {% else %}
-                <li class="nav-item">
-                    <a class="nav-link pr-3 text-light" href="/login">Login</a>
+                <li>
+                    <a href="/users/{{ g.user.id }}">
+                        <img src="{{ g.user.image_url }}" alt="{{ g.user.username }}">
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" href="/register">Sign up</a>
-                </li>
+                <li><a href="/pokemon/list">List of pokemon</a></li>
+                <li><a href="/logout">Log out</a></li>
                 {% endif %}
             </ul>
         </div>
     </nav>
-
-    <div class="container" style="margin-top: 2em">
-        {% for category, msg in get_flashed_messages(with_categories=True) %}
-        <div class="alert alert-{{category}}">{{ msg }}</div>
+    <div class="container">
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
         {% endfor %}
 
-        {%block content%}
-        {%endblock%}
+        {% block content %}
+        {% endblock %}
+
     </div>
 </body>
 

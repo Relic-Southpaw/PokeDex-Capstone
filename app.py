@@ -50,9 +50,15 @@ def search_pokemon(poke_id):
     return render_template ('pokedex_stats.html', pokemon = res)
 
 @app.route('/')
-def poke_search():
-    # poke_id = 25
+def homepage():
     return render_template ("home.html")
+
+@app.route('/poke-search')
+def poke_search():
+    search = request.args.get('q')
+    res = client.get_pokemon(search)
+    pkid = res.id
+    return redirect(f'/pokemon/{pkid}')
 
     #######################################################
     #Login / register / logout
@@ -109,7 +115,7 @@ def logout():
     return redirect("/login")
 
 
-@app.route('/register')
+@app.route('/signup', methods=["GET", "POST"])
 def signup():
     form = UserAddForm()
 
@@ -127,9 +133,38 @@ def signup():
             return render_template('users/signup.html', form=form)
 
         do_login(user)
+
+        return redirect("/")
+
     return render_template("/users/signup.html", form=form)
 
     #######################################################
+    # User Information and profile
+
+    #######################################################
+
+@app.route('/users/<int:user_id>')
+def users_show(user_id):
+    """Show user profile."""
+
+    user = User.query.get_or_404(user_id)
+    return render_template('users/detail.html', user=user)
+   
+
+    #######################################################
+    # Pokemon Interactions
+    #######################################################
+
+@app.route('/pokemon/list')
+def list_of_pokemon():
+    pokelist =[]
+    x = 1
+    y = 101
+    for p in range(x, y):
+        pokemon = client.get_pokemon(p)
+        pokelist.append(pokemon)
+    
+    return render_template('pklist.html', pklist = pokelist)
 
 @app.route('/pokemon/<int:poke_id>/abilities')
 def poke_abilities_list(poke_id):

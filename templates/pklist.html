@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{%block content%}
+<div class="container">
+    <div class="row">
+        {%for pk in pklist%}
+        <div class="col-2 border border-dark rounded m-3">
+            <b>{{pk.id}}.</b>
+            <a href="/pokemon/{{pk.id}}">
+                <img src="{{pk.sprites.front_default}}" alt="">
+                <br>
+                {{pk.name}}
+            </a>
+        </div>
+        {%endfor%}
+    </div>
+</div>
+{%endblock%}

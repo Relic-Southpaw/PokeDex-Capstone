@@ -16,7 +16,13 @@ class PokeTeam(db.Model):
     __tablename__ = 'poketeams'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    team = db.Column(db.Text, nullable=False)
+    team_name = db.Column(db.Text, nullable=False)
+    pokemon1 = db.Column(db.Integer, nullable = False) 
+    pokemon2 = db.Column(db.Integer, nullable = False)
+    pokemon3 = db.Column(db.Integer, nullable = False)
+    pokemon4 = db.Column(db.Integer, nullable = False)
+    pokemon5 = db.Column(db.Integer, nullable = False)
+    pokemon6 = db.Column(db.Integer, nullable = False)
     trainer_id = db.Column(db.Integer, db.ForeignKey('trainers.id'))
 
     user = db.relationship('User', backref="poketeams")
@@ -34,28 +40,42 @@ class User(db.Model):
 
     password = db.Column(db.Text, nullable=False)
 
-    @classmethod
-    def register(cls, username, pwd):
-        """Register trainer w/hashed password & return trainer."""
-
-        hashed = bcrypt.generate_password_hash(pwd)
-        # turn bytestring into normal (unicode utf8) string
-        hashed_utf8 = hashed.decode("utf8")
-
-        # return instance of trainer w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8)
+    favorite_pokemon = db.Column(db.Integer)
 
     @classmethod
-    def authenticate(cls, username, pwd):
-        """Validate that trainer exists & password is correct.
+    def signup(cls, username, email, password):
+        """Sign up user.
 
-        Return trainer if valid; else return False.
+        Hashes password and adds user to system.
         """
 
-        u = User.query.filter_by(username=username).first()
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 
-        if u and bcrypt.check_password_hash(u.password, pwd):
-            # return user instance
-            return u
-        else:
-            return False
+        user = User(
+            username=username,
+            email=email,
+            password=hashed_pwd,
+        )
+
+        db.session.add(user)
+        return user
+
+    @classmethod
+    def authenticate(cls, username, password):
+        """Find user with `username` and `password`.
+
+        This is a class method (call it on the class, not an individual user.)
+        It searches for a user whose password hash matches this password
+        and, if it finds such a user, returns that user object.
+
+        If can't find matching user (or if password is wrong), returns False.
+        """
+
+        user = cls.query.filter_by(username=username).first()
+
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
+
+        return False
