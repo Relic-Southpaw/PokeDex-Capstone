@@ -3,9 +3,8 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g, abort, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from models import connect_db, db, User, PokeTeam
+from models import connect_db, db, User, PokeTeam, PokeFav
 from forms import UserAddForm, LoginForm
-# import time, sys # for the delay function
 import pokepy as pk
 
 client = pk.V2Client()
@@ -14,6 +13,7 @@ app = Flask(__name__)
 CURR_USER_KEY = "curr_user"
 
 app.config['SECRET_KEY'] = "pokemonmeandyou"
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///pokedex'))
 
@@ -55,6 +55,10 @@ def homepage():
 
 @app.route('/poke-search')
 def poke_search():
+    ''' Searches for pokemon, 
+    gets id, 
+    and redirects to URL of specific pokemon.
+    '''
     search = request.args.get('q')
     res = client.get_pokemon(search)
     pkid = res.id
@@ -146,25 +150,49 @@ def signup():
 @app.route('/users/<int:user_id>')
 def users_show(user_id):
     """Show user profile."""
-
+    pk_favorites=[]
     user = User.query.get_or_404(user_id)
-    return render_template('users/detail.html', user=user)
+    favorites=user.favorites
+    for fv in favorites:
+        if fv.user_id == user_id:
+            pokemon = client.get_pokemon(fv.poke_id)
+            pk_favorites.append(pokemon)
+
+    return render_template('users/detail.html', user=user, pk_favorites = pk_favorites)
    
 
     #######################################################
     # Pokemon Interactions
     #######################################################
 
-@app.route('/pokemon/list')
-def list_of_pokemon():
+@app.route('/pokemon/list/<int:pg>')
+def list_of_pokemon(pg):
+    print(g.user.username)
     pokelist =[]
-    x = 1
-    y = 101
+    y = (pg*100) +1
+    if y > 1009:
+        y = 1009 
+    x = y - 100
+    if y == 1009:
+        x = 1001
     for p in range(x, y):
         pokemon = client.get_pokemon(p)
         pokelist.append(pokemon)
-    
-    return render_template('pklist.html', pklist = pokelist)
+    return render_template('pklist.html', pklist = pokelist, pg = pg)
+
+@app.route('/pokemon/list/<int:pg>/<int:poke_id>/like')
+def like_from_list(pg, poke_id):
+    print(pg)
+    print (poke_id)
+    if len(g.user.username)>1:
+        PokeFav.addfavlist(
+            user_id= g.user.id,
+            poke_id = poke_id
+            )
+        db.session.commit()
+    else:
+        flash("You need to be logged in to do that!", 'danger')       
+    return redirect(f'/pokemon/list/{pg}')
 
 @app.route('/pokemon/<int:poke_id>/abilities')
 def poke_abilities_list(poke_id):
@@ -198,3 +226,13 @@ def poke_move_def(move):
     move = client.get_move(move)
 
     return render_template('p_move_def.html', move = move)
+
+    #######################################################
+    # error handling
+    #######################################################
+
+@app.errorhandler(500)
+def page_not_found(e):
+    """when the search fails it returns 500, so redirect for that"""
+
+    return render_template('badsearch.html'), 500

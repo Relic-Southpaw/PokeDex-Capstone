@@ -28,3 +28,4 @@ class UserEditForm(FlaskForm):
     username = StringField('Trainer ID', validators=[DataRequired()])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[Length(min=6)])
+              

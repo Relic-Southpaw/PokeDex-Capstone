@@ -27,6 +27,35 @@ class PokeTeam(db.Model):
 
     user = db.relationship('User', backref="poketeams")
 
+class PokeFav(db.Model):
+    __tablename__ = 'favorite_pokemon'
+    
+    id = db.Column(
+        db.Integer, 
+        primary_key=True, 
+        autoincrement=True
+        )
+    
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('trainers.id', ondelete='cascade')
+    )
+
+    poke_id = db.Column(
+        db.Integer
+    )
+
+    @classmethod
+    def addfavlist(cls, user_id, poke_id):
+        """adds a favorite to the database tied to a user id"""
+
+        pk_favorite = PokeFav(
+            user_id = user_id,
+            poke_id = poke_id
+        )
+        db.session.add(pk_favorite)
+        return pk_favorite
+
 
 class User(db.Model):
 
@@ -41,6 +70,10 @@ class User(db.Model):
     password = db.Column(db.Text, nullable=False)
 
     favorite_pokemon = db.Column(db.Integer)
+
+    favorites = db.relationship(
+        'PokeFav'
+    )
 
     @classmethod
     def signup(cls, username, email, password):
@@ -79,3 +112,5 @@ class User(db.Model):
                 return user
 
         return False
+    
+

@@ -1,15 +1,38 @@
 {% extends 'base.html' %}
 {%block content%}
-<div class="container">
-    <div class="row">
+<div>
+    {%for page in range(1, 11)%}
+    {%if page == pg%}
+    <a href="/pokemon/list/{{page}}" class="btn btn-dark">{{(page*100)-99}} - {{page*100}}</a>
+    {%else%}
+    <a href="/pokemon/list/{{page}}" class="btn btn-outline-dark">{{(page*100)-99}} - {{page*100}}</a>
+    {%endif%}
+    {%endfor%}
+    {%if 11 == pg%}
+    <a href="/pokemon/list/11" class="btn btn-dark">1001 - 1008</a>
+    {%else%}
+    <a href="/pokemon/list/11" class="btn btn-outline-dark">1001 - 1008</a>
+    {%endif%}
+</div>
+<div class="container justify-content-center">
+    <div class="row justify-content-center">
         {%for pk in pklist%}
-        <div class="col-2 border border-dark rounded m-3">
-            <b>{{pk.id}}.</b>
-            <a href="/pokemon/{{pk.id}}">
-                <img src="{{pk.sprites.front_default}}" alt="">
+        <div class="text-center col-2 border border-dark rounded-circle m-2 bg-danger bg-opacity-10">
+            <div id="{{pk.id}}">
+                <div class="mx-auto">
+                    <b>{{pk.id}}.</b>
+                </div>
+                <a href="/pokemon/{{pk.id}}">
+                    <img src="{{pk.sprites.front_default}}" class="mx-auto" alt="">
+                    <p>
+                        {{pk.name}}
+                    </p>
+                </a>
                 <br>
-                {{pk.name}}
-            </a>
+                <a href="/pokemon/list/{{pg}}/{{pk.id}}/like" class="heart btn border-dark rounded-circle bg-light"
+                    value="{{pk.id}}">♡</a>
+            </div>
+            <br>
         </div>
         {%endfor%}
     </div>
