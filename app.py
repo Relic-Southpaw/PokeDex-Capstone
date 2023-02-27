@@ -15,7 +15,7 @@ CURR_USER_KEY = "curr_user"
 app.config['SECRET_KEY'] = "pokemonmeandyou"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgresql:///pokedex'))
+    os.environ.get('DATABASE_URL', 'postgresql:///pokedex').replace('://', 'ql://', 1))
 
 connect_db(app)
 
