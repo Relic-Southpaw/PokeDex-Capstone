@@ -15,7 +15,6 @@ MarkupSafe==2.1.2
 psycopg-binary==3.1.8
 psycopg2-binary==2.9.5
 six==1.16.0
-SQLAlchemy==2.0.4
 typing_extensions==4.5.0
 webencodings==0.5.1
 Werkzeug==2.2.3
