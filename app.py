@@ -15,7 +15,9 @@ CURR_USER_KEY = "curr_user"
 app.config['SECRET_KEY'] = "pokemonmeandyou"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgresql:///pokedex').replace('://', 'ql://', 1))
+    os.environ.get('DATABASE_URL', 'postgresql:///pokedex')
+    # .replace('://', 'ql://', 1)
+    )
 
 connect_db(app)
 
@@ -34,18 +36,18 @@ connect_db(app)
 @app.route('/pokemon/<int:poke_id>')
 def search_pokemon(poke_id):
     res = client.get_pokemon(poke_id)
-    # print (res.name)
-    # print (res.id)
-    # for x in list(res.types):
-    #     print (x.type.name)
-    #     print (x.slot)
-    # for x in list(res.abilities):
-    #     print (x.ability.name)
-    # print (res.height)
-    # print (res.weight)
-    # for x in list(res.moves):
-    #     print (x.move.name)
-    # print (res.species)
+    print (res.name)
+    print (res.id)
+    for x in list(res.types):
+        print (x.type.name)
+        print (x.slot)
+    for x in list(res.abilities):
+        print (x.ability.name)
+    print (res.height)
+    print (res.weight)
+    for x in list(res.moves):
+        print (x.move.name)
+    print (res.species)
 
     return render_template ('pokedex_stats.html', pokemon = res)
 
