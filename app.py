@@ -5,9 +5,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from .models import connect_db, db, User, PokeTeam, PokeFav
 from .forms import UserAddForm, LoginForm, UserEditForm
-import pokepy as pk
+import pokepy
+import pokebase as pb
 
-client = pk.V2Client()
+client = pokepy.V2Client()
 app = Flask(__name__)
 
 CURR_USER_KEY = "curr_user"
@@ -35,24 +36,26 @@ connect_db(app)
 # delay_print("hello world")
 @app.route('/pokemon/<int:poke_id>')
 def search_pokemon(poke_id):
-    res = client.get_pokemon(poke_id)
-    print (res.name)
-    print (res.id)
-    for x in list(res.types):
-        print (x.type.name)
-        print (x.slot)
-    for x in list(res.abilities):
-        print (x.ability.name)
-    print (res.height)
-    print (res.weight)
-    for x in list(res.moves):
-        print (x.move.name)
-    print (res.species)
+    res=client.get_pokemon(poke_id)[0]
+    # print (res.name)
+    # print (res.id)
+    # for x in list(res.types):
+    #     print (x.type.name)
+    #     print (x.slot)
+    # for x in list(res.abilities):
+    #     print (x.ability.name)
+    # print (res.height)
+    # print (res.weight)
+    # for x in list(res.moves):
+    #     print (x.move.name)
+    # print (res.species)
 
     return render_template ('pokedex_stats.html', pokemon = res)
 
 @app.route('/')
 def homepage():
+    tlist=[]
+    test = client.get_pokemon(25)
     return render_template ("home.html")
 
 @app.route('/poke-search')
@@ -216,7 +219,7 @@ def list_of_pokemon(pg):
     if y == 1009:
         x = 1001
     for p in range(x, y):
-        pokemon = client.get_pokemon(p)
+        pokemon = client.get_pokemon(p)[0]
         pokelist.append(pokemon)
     return render_template('pklist.html', pklist = pokelist, pg = pg)
 
@@ -237,33 +240,33 @@ def like_from_list(pg, poke_id):
 @app.route('/pokemon/<int:poke_id>/abilities')
 def poke_abilities_list(poke_id):
     '''gets a pokemon id, makes a list of abilities'''
-    pokemon = client.get_pokemon(poke_id)
+    pokemon = client.get_pokemon(poke_id)[0]
     abilities = []
-    for a in list(pokemon.abilities):
-        x = client.get_ability(a.ability.name)
+    for a in pokemon.abilities:
+        x = client.get_ability(a.ability.name)[0]
         print(x.name)
         # for p in list(x.pokemon):
         #     print (p.pokemon)
         # print(list(x.pokemon))
         abilities.append(x)
         # loop to just add the english effects to the list
-        for b in list(x.effect_entries):
+        for b in x.effect_entries:
             if b.language.name == 'en':
                 x.effect = b.effect
     return render_template('poke_abilities.html', pokemon = pokemon, abilities = abilities)
 
 @app.route('/pokemon/<int:poke_id>/moves')
 def poke_moves_list(poke_id):
-    pokemon = client.get_pokemon(poke_id)
+    pokemon = client.get_pokemon(poke_id)[0]
     moves = []
-    for m in list(pokemon.moves):
+    for m in pokemon.moves:
         moves.append(m)
 
     return render_template('poke_moves.html', pokemon = pokemon, moves = moves)
 
 @app.route('/pokemon/moves/<move>')
 def poke_move_def(move):
-    move = client.get_move(move)
+    move = client.get_move(move)[0]
 
     return render_template('p_move_def.html', move = move)
 
