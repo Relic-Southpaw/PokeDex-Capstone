@@ -3,10 +3,10 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g, abort, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from .models import connect_db, db, User, PokeTeam, PokeFav
+from .models import connect_db, db, User, PokeFav
 from .forms import UserAddForm, LoginForm, UserEditForm
 import pokepy
-import pokebase as pb
+# import pokebase as pb
 
 client = pokepy.V2Client()
 app = Flask(__name__)
