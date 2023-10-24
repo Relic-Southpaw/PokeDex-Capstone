@@ -49,13 +49,12 @@ class PokeFav(db.Model):
     def addfavlist(cls, user_id, poke_id):
         """adds a favorite to the database tied to a user id"""
 
-        pk_favorite = PokeFav(
-            user_id = user_id,
-            poke_id = poke_id
+        pk_favorite = (
+            user_id == user_id,
+            poke_id == poke_id
         )
         db.session.add(pk_favorite)
         return pk_favorite
-
 
 class User(db.Model):
 

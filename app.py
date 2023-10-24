@@ -3,12 +3,14 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g, abort, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from models import connect_db, db, User, PokeFav
-from forms import UserAddForm, LoginForm, UserEditForm
+
+from .forms import UserAddForm, LoginForm, UserEditForm
+from .models import connect_db, db, User, PokeFav
 import pokepy
 # import pokebase as pb
 
 client = pokepy.V2Client()
+# client = 
 app = Flask(__name__)
 
 CURR_USER_KEY = "curr_user"
@@ -21,47 +23,19 @@ if uri.startswith('postgres://'):
 	uri = uri.replace('postgres://', 'postgresql://', 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
-# app.config['SQLALCHEMY_DATABASE_URI'] = (
-#     os.environ.get('DATABASE_URL', 'postgresql:///pokedex')
-#     .replace('://', 'ql://', 1)
-#     )
+
 
 connect_db(app)
 
-# def delay_print(s):
-#     """prints one letter at a time like the original games did"""
-#     #found this tidbit on stack overflow
-#     #https://stackoverflow.com/questions/9246076/how-to-print-one-character-at-a-time-on-one-line
 
-#     for c in s:
-#         sys.stdout.write(c)
-#         sys.stdout.flush()
-#         time.sleep(0.05)
-
-
-# delay_print("hello world")
-@app.route('/pokemon/<int:poke_id>')
-def search_pokemon(poke_id):
-    res=client.get_pokemon(poke_id)[0]
-    # print (res.name)
-    # print (res.id)
-    # for x in list(res.types):
-    #     print (x.type.name)
-    #     print (x.slot)
-    # for x in list(res.abilities):
-    #     print (x.ability.name)
-    # print (res.height)
-    # print (res.weight)
-    # for x in list(res.moves):
-    #     print (x.move.name)
-    # print (res.species)
-
+@app.route('/pokemon/<poke_name>')
+def search_pokemon(poke_name):
+    print(poke_name)
+    res=client.get_pokemon(poke_name)[0]
     return render_template ('pokedex_stats.html', pokemon = res)
 
 @app.route('/')
 def homepage():
-    tlist=[]
-    test = client.get_pokemon(25)
     return render_template ("home.html")
 
 @app.route('/poke-search')
@@ -70,9 +44,7 @@ def poke_search():
     gets id, 
     and redirects to URL of specific pokemon.
     '''
-    search = request.args.get('q')
-    res = client.get_pokemon(search)
-    pkid = res.id
+    pkid = request.args.get('q')
     return redirect(f'/pokemon/{pkid}')
 
     #######################################################
@@ -124,7 +96,6 @@ def login():
 @app.route('/logout')
 def logout():
     """Handle logout of user."""
-    # IMPLEMENT THIS
     do_logout()
     flash("You have been logged out!")
     return redirect("/login")
@@ -251,9 +222,6 @@ def poke_abilities_list(poke_id):
     for a in pokemon.abilities:
         x = client.get_ability(a.ability.name)[0]
         print(x.name)
-        # for p in list(x.pokemon):
-        #     print (p.pokemon)
-        # print(list(x.pokemon))
         abilities.append(x)
         # loop to just add the english effects to the list
         for b in x.effect_entries:
