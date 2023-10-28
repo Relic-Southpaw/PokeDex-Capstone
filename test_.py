@@ -1,7 +1,7 @@
 from unittest import TestCase
-from .app import app
 from flask import session
-from .models import db, User
+from app import app
+from models import db, User
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pokedex_test'
@@ -24,6 +24,13 @@ class FrontEndTestCase(TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertIn('<h1>Project: PokeDex</h1>', html)
+    
+    def test_pokemon_page(self):
+        resp = client.get('/pokemon/25')
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('<h2>pikachu</h2>', html)
 
 
 
@@ -40,3 +47,4 @@ class PokemonUsersTestCase(TestCase):
 
     def tearDown(self):
         """Clearing test data"""
+        db.session.rollback()
