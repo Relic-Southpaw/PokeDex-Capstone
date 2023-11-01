@@ -1,7 +1,8 @@
+import os
+from flask import g, session
+from app import app, session, CURR_USER_KEY, add_user_to_g
 from unittest import TestCase
-from flask import session
-from app import app
-from models import db, User
+from models import connect_db, db, User
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pokedex_test'
@@ -15,7 +16,45 @@ db.create_all()
 
 client = app.test_client()
 
-class FrontEndTestCase(TestCase):
+# class TestData():
+#     def __init__(self, data):
+#         self.data = data
+
+class SetUser():
+    """Testing the user loging for the app"""
+
+    def __init__(self,username,password,email):
+        self.username=username
+        self.password=password
+        self.email = email
+
+form = SetUser(username = "test", 
+                password = "PokemonRules01",
+                email = "test@testing.com")
+
+class TestUser(TestCase):
+    """Tests user login and list"""
+    def setUp(self):
+        User.query.delete()
+        user = User.signup(form.username, form.password,form.email)
+        user.password = str(user.password)
+        db.session.add(user)
+        db.session.commit()
+
+    def tearDown(self):
+        """clean up and roll back user login"""
+
+        db.session.rollback()
+
+    def testPokemonList(self):
+        """verifies user is logged in, and that the list pages is working"""
+        resp = client.get('/pokemon/list/1',follow_redirects =True)
+        html = resp.get_data(as_text=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("bulbasaur",html)
+
+class PokemonAppTests(TestCase):
     """Testing front in HTML displays"""
 
     def test_home_page(self):
@@ -26,25 +65,8 @@ class FrontEndTestCase(TestCase):
         self.assertIn('<h1>Project: PokeDex</h1>', html)
     
     def test_pokemon_page(self):
-        resp = client.get('/pokemon/25')
+        resp = client.get('/pokemon/25', follow_redirects=True)
         html = resp.get_data(as_text=True)
 
         self.assertEqual(resp.status_code, 200)
-        self.assertIn('<h2>pikachu</h2>', html)
-
-
-
-#This is test sample for testing logins and users
-USER_1 = {
-
-}
-
-class PokemonUsersTestCase(TestCase):
-    """Testing the user loging for the app"""
-
-    def setUp(self):
-        """Making demo data."""
-
-    def tearDown(self):
-        """Clearing test data"""
-        db.session.rollback()
+        self.assertIn('<H2>pikachu</H2>', html)
