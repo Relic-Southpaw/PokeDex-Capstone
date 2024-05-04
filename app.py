@@ -3,13 +3,12 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g, abort, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from forms import UserAddForm, UserEditForm, LoginForm, SearchPokemonForm
-from models import connect_db, db, User, PokeFav
+from .forms import UserAddForm, UserEditForm, LoginForm, SearchPokemonForm
+from .models import connect_db, db, User, PokeFav
 import pokepy
 # import pokebase as pb
 
 client = pokepy.V2Client()
-# client = 
 app = Flask(__name__)
 
 CURR_USER_KEY = "curr_user"
@@ -29,7 +28,6 @@ connect_db(app)
 
 @app.route('/pokemon/<poke_name>')
 def search_pokemon(poke_name):
-    print(poke_name)
     res=client.get_pokemon(poke_name)[0]
     return render_template ('pokedex_stats.html', pokemon = res)
 

@@ -16,10 +16,6 @@ db.create_all()
 
 client = app.test_client()
 
-# class TestData():
-#     def __init__(self, data):
-#         self.data = data
-
 class SetUser():
     """Testing the user loging for the app"""
 
