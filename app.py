@@ -22,7 +22,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 # 	uri = uri.replace('postgres://', 'postgresql://', 1)
 
 # +++++++++++++++RENDER++++++++++++++++++++++
-uri = os.environ.get('DATABASE_URL')
+uri = os.environ.get('DATABASE_URL', 'postgresql:///pokedex')
 
 
 
