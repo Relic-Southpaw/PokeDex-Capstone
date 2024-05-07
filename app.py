@@ -16,12 +16,17 @@ CURR_USER_KEY = "curr_user"
 app.config['SECRET_KEY'] = "pokemonmeandyou"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 
-uri = os.environ.get('DATABASE_URL', 'postgresql:///pokedex')
-if uri.startswith('postgres://'):
-	uri = uri.replace('postgres://', 'postgresql://', 1)
+# ---------------Heroku----------------------
+# uri = os.environ.get('DATABASE_URL', 'postgresql:///pokedex')
+# if uri.startswith('postgres://'):
+# 	uri = uri.replace('postgres://', 'postgresql://', 1)
+
+# +++++++++++++++RENDER++++++++++++++++++++++
+uri = os.environ.get('DATABASE_URL')
+
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
-
 
 connect_db(app)
 
