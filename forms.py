@@ -2,11 +2,11 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Email, Length
 
+# ---DON'T Think I need this, keeping for testing juuuust in case
+# class SearchPokemonForm(FlaskForm):
 
-class SearchPokemonForm(FlaskForm):
-
-    poke_name = StringField("Search by Name")
-    poke_number = FloatField("Search by Number")
+#     poke_name = StringField("Search by Name")
+#     poke_number = FloatField("Search by Number")
 
 class UserAddForm(FlaskForm):
     """Form for adding users."""
